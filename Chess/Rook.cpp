@@ -8,5 +8,9 @@ Rook::Rook(int x, int y, bool white) : Piece(x, y, white)
 
 bool Rook::ValidMove(int DestX, int DestY)
 {
-	return true;
+	if (Coords.X == DestX || Coords.Y == DestY)
+	{
+		return true;
+	}
+	return false;
 }

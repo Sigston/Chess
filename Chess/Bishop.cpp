@@ -8,5 +8,18 @@ Bishop::Bishop(int x, int y, bool white) : Piece(x, y, white)
 
 bool Bishop::ValidMove(int DestX, int DestY)
 {
-	return true;
+	// Two diagonals.
+	if ((DestX - Coords.X) == (DestY - Coords.Y))
+	{
+		return true;
+	}
+	else if (((DestX - Coords.X) + (DestY - Coords.Y)) == 0)
+	{
+		return true;
+	}
+	else if (((DestX - Coords.X) - (DestY - Coords.Y)) == 0)
+	{
+		return true;
+	}
+	return false;
 }

@@ -12,12 +12,8 @@ int main()
 	Game game(&drawer);
 
 	game.Introduction();
-	bool Playing = game.Menu();
-	while (Playing)
-	{
+	while (game.Menu())
 		game.Play();
-		Playing = game.Menu();
-	}
 
 	return(0);
 }
