@@ -6,14 +6,9 @@
 #include "Board.h"
 #include "Game.h"
 
-const unsigned short SCREEN_SPACE = 70;
-const unsigned short PADDING = 3;
-const char SCREEN_CHARACTER = '|';
-const std::string USER_PROMPT = "|   : ";
-
 int main()
 {
-	Drawer drawer(SCREEN_SPACE, PADDING, SCREEN_CHARACTER, USER_PROMPT);
+	Drawer drawer(70, 3, '|', "|   : ");
 	Game game(&drawer);
 
 	game.Introduction();
