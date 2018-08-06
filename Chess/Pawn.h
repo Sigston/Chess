@@ -6,5 +6,7 @@ class Pawn :
 public:
 	Pawn(int x, int y, bool white);
 	bool ValidMove(int DestX, int DestY);
+private:
+	bool IsFirstGo = true;
 };
 

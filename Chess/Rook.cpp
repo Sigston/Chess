@@ -2,7 +2,7 @@
 
 Rook::Rook(int x, int y, bool white) : Piece(x, y, white)
 {
-	PieceCharacter = 'R';
+	PieceCharacter = 'r';
 	PieceName = "Rook";
 }
 

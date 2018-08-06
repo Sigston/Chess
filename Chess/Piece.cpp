@@ -1,7 +1,8 @@
 #include "Piece.h"
+#include <ctype.h>
 
 Piece::Piece(int x, int y, bool white) :
-	IsWhite(white)
+	bIsWhite(white)
 {
 	Coords.X = x;
 	Coords.Y = y;
@@ -16,4 +17,16 @@ void Piece::Move(int DestX, int DestY)
 {
 	Coords.X = DestX;
 	Coords.Y = DestY;
+}
+
+char Piece::GetChar()
+{
+	if (bIsWhite)
+	{
+		return PieceCharacter;
+	}
+	else
+	{
+		return toupper(PieceCharacter);
+	}
 }

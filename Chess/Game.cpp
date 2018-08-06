@@ -12,7 +12,6 @@ void Game::Play()
 	// Draw board, request move, change game state, 
 	// check if anyone has won or if there is a stalemate, repeat.
 	bool IsPlaying = true;
-	bool WhitesGo = true;
 	Draw->BlankLine();
 	Draw->Seperator();
 	Draw->BlankLine();
@@ -28,7 +27,7 @@ void Game::Play()
 			Draw->Text(Board[x]);
 		}
 		Draw->BlankLine();
-		if (WhitesGo)
+		if (GameBoard.IsWhitesGo)
 		{
 			Draw->Text("It is white's go!");
 		}
@@ -42,7 +41,7 @@ void Game::Play()
 		Draw->Text("Enter the coordinates of the piece you would like to move.");
 		unsigned int SourceX = 8;
 		unsigned int SourceY = 8;
-		while(true)
+		while (true)
 		{
 			Draw->Text("X Coordinate.");
 			while (SourceX > 7)
@@ -64,10 +63,17 @@ void Game::Play()
 				SourceX = 8;
 				SourceY = 8;
 			}
+			else if (!GameBoard.IsOwnPiece(SourceX, SourceY))
+			{
+				Draw->BlankLine();
+				Draw->Text("Please select your own piece (white is lower case, black is upper case).");
+				Draw->BlankLine();
+				SourceX = 8;
+				SourceY = 8;
+			}
 			else
 				break;
 		}
-
 		Draw->BlankLine();
 		Draw->Text("To where would you like to move the " + GameBoard.PieceName(SourceX, SourceY) 
 			+ " at " + std::to_string(SourceX) + ", " + std::to_string(SourceY) + "?");
@@ -87,7 +93,6 @@ void Game::Play()
 				Draw->UserPrompt();
 				ValidInputUInt(DestY, Draw->GetUserPrompt());
 			}
-
 			if (!GameBoard.IsValidMove(SourceX, SourceY, DestX, DestY))
 			{
 				Draw->BlankLine();
@@ -101,10 +106,8 @@ void Game::Play()
 				GameBoard.MovePiece(SourceX, SourceY, DestX, DestY);
 				break;
 			}
-
 		}
-
-		WhitesGo = !WhitesGo;
+		GameBoard.IsWhitesGo = !GameBoard.IsWhitesGo;
 		Draw->BlankLine();
 		Draw->Seperator();
 	}

@@ -8,12 +8,13 @@ public:
 	virtual bool ValidMove(int DestX, int DestY);
 	int GetX() { return Coords.X; }
 	int GetY() { return Coords.Y; }
+	bool IsWhite() { return bIsWhite; }
 	void Move(int DestX, int DestY);
-	char GetChar() { return PieceCharacter; }
+	char GetChar();
 	std::string GetName() { return PieceName; }
 protected:
 	struct { int X; int Y; } Coords;
-	bool IsWhite;
+	bool bIsWhite;
 	char PieceCharacter;
 	std::string PieceName;
 };

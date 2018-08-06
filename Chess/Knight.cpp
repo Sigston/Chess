@@ -3,7 +3,7 @@
 
 Knight::Knight(int x, int y, bool white) : Piece(x, y, white)
 {
-	PieceCharacter = 'N';
+	PieceCharacter = 'n';
 	PieceName = "Knight";
 }
 

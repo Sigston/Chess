@@ -46,61 +46,92 @@ Board::Board()
 
 bool Board::IsEmpty(int XCord, int YCord)
 {
-	for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
+	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(XCord, YCord);
+	if (PiecePtr == nullptr)
 	{
-		if ((*it)->GetX() == XCord && (*it)->GetY() == YCord)
-		{
-			return false;
-		}
+		return true;
 	}
-	return true;
+	else
+	{
+		return false;
+	}
 }
 
 std::string Board::PieceName(int XCord, int YCord)
 {
 	std::string Output = "NO_PIECE";
-	for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
+	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(XCord, YCord);
+	if (PiecePtr != nullptr)
 	{
-		if ((*it)->GetX() == XCord && (*it)->GetY() == YCord)
-		{
-			Output = (*it)->GetName();
-		}
+		Output = PiecePtr->GetName();
 	}
 	return(Output);
 }
 
 bool Board::IsValidMove(int SourceX, int SourceY, int DestX, int DestY)
 {
-	// Can the piece move in this kind of way?
-	for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
+	// Get a pointer to the piece, check if there was a piece found.
+	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(SourceX, SourceY);
+	if (PiecePtr == nullptr)
 	{
-		if ((*it)->GetX() == SourceX && (*it)->GetY() == SourceY)
+		return false;
+	}
+	// Is there another friendly piece there?
+	std::shared_ptr<Piece> DestPiece = PointerFromCoords(DestX, DestY);
+	if (DestPiece != nullptr)
+	{
+		if ((PiecePtr->IsWhite() && DestPiece->IsWhite()) ||
+			(!PiecePtr->IsWhite() && !DestPiece->IsWhite()))
 		{
-			return (*it)->ValidMove(DestX, DestY);
+			return false;
 		}
 	}
 
-	// If it isn't a knight, are there pieces in the way?
+	// Make sure there are no pieces in the way if the piece isn't a knight.
+	/*if (PiecePtr->GetName() != "Knight")
+	{
 
+		return true;
+	}*/
+
+	return PiecePtr->ValidMove(DestX, DestY);
+}
+
+bool Board::IsOwnPiece(int SourceX, int SourceY)
+{
+	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(SourceX, SourceY);
+	if (PiecePtr == nullptr)
+	{
+		return false;
+	}
+
+	if ((PiecePtr->IsWhite() && IsWhitesGo) || (!PiecePtr->IsWhite() && !IsWhitesGo))
+	{
+		return true;
+	}
 	return false;
 }
 
 void Board::MovePiece(int SourceX, int SourceY, int DestX, int DestY)
 {
-	if (IsValidMove(SourceX, SourceY, DestX, DestY))
+	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(SourceX, SourceY);
+	if (PiecePtr != nullptr)
 	{
-		for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
-		{
-			if ((*it)->GetX() == SourceX && (*it)->GetY() == SourceY)
-			{
-				(*it)->Move(DestX, DestY);
-			}
-		}
+		PiecePtr->Move(DestX, DestY);
 	}
-	else
-		return;
 }
 
+std::shared_ptr<Piece> Board::PointerFromCoords(int SourceX, int SourceY)
+{
+	for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
+	{
+		if ((*it)->GetX() == SourceX && (*it)->GetY() == SourceY)
+		{
+			return *it;
+		}
+	}
+	return nullptr;
+}
 std::vector<std::string> Board::GetBoard()
 {
 	// Initial board.

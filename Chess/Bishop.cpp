@@ -1,23 +1,15 @@
 #include "Bishop.h"
+#include <cmath>
 
 Bishop::Bishop(int x, int y, bool white) : Piece(x, y, white)
 {
-	PieceCharacter = 'B';
+	PieceCharacter = 'b';
 	PieceName = "Bishop";
 }
 
 bool Bishop::ValidMove(int DestX, int DestY)
 {
-	// Two diagonals.
-	if ((DestX - Coords.X) == (DestY - Coords.Y))
-	{
-		return true;
-	}
-	else if (((DestX - Coords.X) + (DestY - Coords.Y)) == 0)
-	{
-		return true;
-	}
-	else if (((DestX - Coords.X) - (DestY - Coords.Y)) == 0)
+	if (abs((DestX - Coords.X)) == abs((DestY - Coords.Y)))
 	{
 		return true;
 	}
