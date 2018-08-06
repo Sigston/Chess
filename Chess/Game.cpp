@@ -12,105 +12,115 @@ void Game::Play()
 	// Draw board, request move, change game state, 
 	// check if anyone has won or if there is a stalemate, repeat.
 	bool IsPlaying = true;
-	Draw->BlankLine();
-	Draw->Seperator();
-	Draw->BlankLine();
-	Draw->Text("White goes first.");
-	Draw->BlankLine();
-	Draw->Seperator();
 	while (IsPlaying)
 	{
-		Draw->BlankLine();
-		std::vector<std::string> Board = GameBoard.GetBoard();
-		for (int x = 0; x < Board.size(); ++x)
-		{
-			Draw->Text(Board[x]);
-		}
-		Draw->BlankLine();
-		if (GameBoard.IsWhitesGo)
-		{
-			Draw->Text("It is white's go!");
-		}
-		else
-		{
-			Draw->Text("It is black's go!");
-		}
-		Draw->BlankLine();
-
-		// Get the coordinate of the piece.
-		Draw->Text("Enter the coordinates of the piece you would like to move.");
+		// Get the coordinates and check if this is a valid move.
 		unsigned int SourceX = 8;
 		unsigned int SourceY = 8;
-		while (true)
+		unsigned int DestX = 8;
+		unsigned int DestY = 8;
+		bool CorrectMove = false;
+		while (!CorrectMove)
 		{
-			Draw->Text("X Coordinate.");
+			DrawBoard(GameBoard.GetBoard());
+			Draw->Text("Piece X Coordinate.");
 			while (SourceX > 7)
 			{
 				Draw->UserPrompt();
 				ValidInputUInt(SourceX, Draw->GetUserPrompt());
 			}
-			Draw->Text("Y Coordinate.");
+			Draw->Text("Piece Y Coordinate.");
 			while (SourceY > 7)
 			{
 				Draw->UserPrompt();
 				ValidInputUInt(SourceY, Draw->GetUserPrompt());
 			}
-			if (GameBoard.IsEmpty(SourceX, SourceY))
-			{
-				Draw->BlankLine();
-				Draw->Text("Please select a piece.");
-				Draw->BlankLine();
-				SourceX = 8;
-				SourceY = 8;
-			}
-			else if (!GameBoard.IsOwnPiece(SourceX, SourceY))
-			{
-				Draw->BlankLine();
-				Draw->Text("Please select your own piece (white is lower case, black is upper case).");
-				Draw->BlankLine();
-				SourceX = 8;
-				SourceY = 8;
-			}
-			else
-				break;
-		}
-		Draw->BlankLine();
-		Draw->Text("To where would you like to move the " + GameBoard.PieceName(SourceX, SourceY) 
-			+ " at " + std::to_string(SourceX) + ", " + std::to_string(SourceY) + "?");
-		unsigned int DestX = 8;
-		unsigned int DestY = 8;
-		while (true)
-		{
-			Draw->Text("X Coordinate.");
+			Draw->Text("Destination X Coordinate.");
 			while (DestX > 7)
 			{
 				Draw->UserPrompt();
 				ValidInputUInt(DestX, Draw->GetUserPrompt());
 			}
-			Draw->Text("Y Coordinate.");
+			Draw->Text("Destination Y Coordinate.");
 			while (DestY > 7)
 			{
 				Draw->UserPrompt();
 				ValidInputUInt(DestY, Draw->GetUserPrompt());
 			}
-			if (!GameBoard.IsValidMove(SourceX, SourceY, DestX, DestY))
+			std::string Error;
+			if (ValidateMove(SourceX, SourceY, DestX, DestY, Error))
 			{
-				Draw->BlankLine();
-				Draw->Text("Please choose a valid move.");
-				Draw->BlankLine();
-				DestX = 8;
-				DestY = 8;
+				CorrectMove = true;
 			}
 			else
 			{
-				GameBoard.MovePiece(SourceX, SourceY, DestX, DestY);
-				break;
+				Draw->BlankLine();
+				Draw->Text(Error);
+				SourceX = SourceY = DestX = DestY = 8;
+				CorrectMove = false;
+				Wait();
 			}
 		}
+		GameBoard.MovePiece(SourceX, SourceY, DestX, DestY);
 		GameBoard.IsWhitesGo = !GameBoard.IsWhitesGo;
 		Draw->BlankLine();
 		Draw->Seperator();
 	}
+}
+
+bool Game::ValidateMove(int SourceX, int SourceY, int DestX, int DestY, std::string &Error)
+{
+	if (GameBoard.IsEmpty(SourceX, SourceY))
+	{
+		Error = "Please select a piece.";
+		return false;
+	}
+	if (!GameBoard.IsOwnPiece(SourceX, SourceY))
+	{
+		Error = "Please select your own piece (white is lower case, black is upper case).";
+		return false;
+	}
+	if (!GameBoard.IsValidMove(SourceX, SourceY, DestX, DestY))
+	{
+		Error = "Please choose a valid move.";
+		return false;
+	}
+	// Is there anything in the way?
+	/*auto Piece = GameBoard.PointerFromCoords(SourceX, SourceY);
+	if (Piece->GetName != "Knight")
+	{
+
+	}
+	return true;*/
+}
+
+void Game::DrawBoard(std::vector<std::string> Board)
+{
+	Draw->BlankLine();
+	Draw->Seperator();
+	Draw->BlankLine();
+	for (int x = 0; x < Board.size(); ++x)
+	{
+		Draw->Text(Board[x]);
+	}
+	Draw->BlankLine();
+	if (GameBoard.IsWhitesGo)
+	{
+		Draw->Text("It is white's go!");
+	}
+	else
+	{
+		Draw->Text("It is black's go!");
+	}
+	Draw->BlankLine();
+	std::vector<char> TakenPieces = GameBoard.ListTakenPieces();
+	std::string TakenPiecesString = "Taken Pieces: ";
+	for (auto it = TakenPieces.begin(); it < TakenPieces.end(); ++it)
+	{
+		TakenPiecesString.append(std::string(1, *it) + " ");
+	}
+	Draw->Text(TakenPiecesString);
+	Draw->BlankLine();
 }
 
 void Game::Introduction()
@@ -242,4 +252,10 @@ void Game::ValidInputUInt(unsigned int &OutputInt, std::string ErrorMessage)
 void Game::ValidInputStr(std::string &OutputStr, std::string ErrorMessage)
 {
 	std::getline(std::cin, OutputStr);
+}
+
+void Game::Wait()
+{
+	Draw->UserPrompt();
+	std::cin.ignore();
 }

@@ -7,7 +7,6 @@ Drawer::Drawer(unsigned int ScreenSpace, unsigned int Padding, char ScreenCharac
 	mDrawSpace(ScreenSpace - 2 - Padding * 2), mUserPrompt(UserPrompt)
 { }
 
-
 void Drawer::AddPadding(std::string &Result)
 {
 	for (int i = 0; i != mPadding; ++i)

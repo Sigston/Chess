@@ -19,5 +19,8 @@ private:
 	void ValidInputInt(int &OutputInt, std::string ErrorMessage);
 	void ValidInputUInt(unsigned int &OutputInt, std::string ErrorMessage);
 	void ValidInputStr(std::string &OutputStr, std::string ErrorMessage);
+	bool ValidateMove(int SourceX, int SourceY, int DestX, int DestY, std::string &Error);
+	void DrawBoard(std::vector<std::string> Board);
+	void Wait();
 };
 

@@ -8,16 +8,18 @@ class Board
 {
 public:
 	Board();
-	std::vector <std::string> GetBoard();
+	std::vector<std::string> GetBoard();
 	bool IsEmpty(int XCord, int YCord);
 	std::string PieceName(int XCord, int YCord);
 	bool IsValidMove(int SourceX, int SourceY, int DestX, int DestY);
 	bool IsOwnPiece(int SourceX, int SourceY);
 	void MovePiece(int SourceX, int SourceY, int DestX, int DestY);
 	std::shared_ptr<Piece> PointerFromCoords(int SourceX, int SourceY);
+	std::vector<char> ListTakenPieces();
 
 	bool IsWhitesGo = true;
 private:
 	std::vector<std::shared_ptr<Piece>> Pieces;
+	std::vector<std::shared_ptr<Piece>> TakenPieces;
 };
 

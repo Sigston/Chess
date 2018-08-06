@@ -6,6 +6,7 @@
 #include "Queen.h"
 #include "Pawn.h"
 #include <memory>
+#include <algorithm>
 
 Board::Board()
 {
@@ -117,6 +118,12 @@ void Board::MovePiece(int SourceX, int SourceY, int DestX, int DestY)
 	std::shared_ptr<Piece> PiecePtr = PointerFromCoords(SourceX, SourceY);
 	if (PiecePtr != nullptr)
 	{
+		std::shared_ptr<Piece> GetsTaken = PointerFromCoords(DestX, DestY);
+		if (GetsTaken != nullptr)
+		{
+			TakenPieces.push_back(std::shared_ptr<Piece>(GetsTaken));
+			Pieces.erase(std::find(Pieces.begin(), Pieces.end(), GetsTaken));
+		}
 		PiecePtr->Move(DestX, DestY);
 	}
 }
@@ -132,6 +139,17 @@ std::shared_ptr<Piece> Board::PointerFromCoords(int SourceX, int SourceY)
 	}
 	return nullptr;
 }
+
+std::vector<char> Board::ListTakenPieces()
+{
+	std::vector<char> Output;
+	for (auto it = TakenPieces.begin(); it < TakenPieces.end(); ++it)
+	{
+		Output.push_back((*it)->GetChar());
+	}
+	return(Output);
+}
+
 std::vector<std::string> Board::GetBoard()
 {
 	// Initial board.
