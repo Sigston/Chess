@@ -85,17 +85,59 @@ bool Board::IsValidMove(int SourceX, int SourceY, int DestX, int DestY)
 			(!PiecePtr->IsWhite() && !DestPiece->IsWhite()))
 		{
 			return false;
+		} // Special case of pawn trying to go where there is an enemy piece, and it's trying to move diagonally.
+		else 
+		{
+			if (PiecePtr->GetName() == "Pawn")
+			{
+				int YOffset = ((PiecePtr->IsWhite()) ? -1 : 1);
+				if ((DestY == SourceY + YOffset) &&
+					((DestX == SourceX + 1) || (DestX == SourceX - 1)))
+				{
+					return true;
+				}
+			}
 		}
 	}
-
-	// Make sure there are no pieces in the way if the piece isn't a knight.
-	/*if (PiecePtr->GetName() != "Knight")
+	// Is there anything in the way?
+	if (PiecePtr->GetName() != "Knight")
 	{
-
-		return true;
-	}*/
-
+		int XOffset = ((SourceX == DestX) ? 0 : ((SourceX > DestX) ? -1 : 1));
+		int YOffset = ((SourceY == DestY) ? 0 : ((SourceY > DestY) ? -1 : 1));
+		int XLook = SourceX + XOffset;
+		int YLook = SourceY + YOffset;
+		while (!(XLook == DestX && YLook == DestY))
+		{
+			if (!IsEmpty(XLook, YLook))
+			{
+				return false;
+			}
+			XLook += XOffset;
+			YLook += YOffset;
+		}
+	}
+	// Given all the above, the last thing is if the piece is moving in its own
+	// special way.
 	return PiecePtr->ValidMove(DestX, DestY);
+}
+
+void Board::ChangeTurn()
+{
+	bIsWhitesGo = !bIsWhitesGo;
+}
+
+bool Board::GameOver()
+{
+	// If there's only one king, the game is over.
+	int counter = 0;
+	for (auto it = Pieces.begin(); it < Pieces.end(); ++it)
+	{
+		if ((*it)->GetName() == "King")
+		{
+			++counter;
+		}
+	}
+	return ((counter <= 1) ? true : false);
 }
 
 bool Board::IsOwnPiece(int SourceX, int SourceY)
@@ -106,7 +148,7 @@ bool Board::IsOwnPiece(int SourceX, int SourceY)
 		return false;
 	}
 
-	if ((PiecePtr->IsWhite() && IsWhitesGo) || (!PiecePtr->IsWhite() && !IsWhitesGo))
+	if ((PiecePtr->IsWhite() && bIsWhitesGo) || (!PiecePtr->IsWhite() && !bIsWhitesGo))
 	{
 		return true;
 	}

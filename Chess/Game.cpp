@@ -1,3 +1,7 @@
+// TODO: Implement check so that the player is forced to move out of it, and so that
+//	the game ends on checkmate and not on the king being taken.
+//	Also implement en passant and castling.
+
 #include "Game.h"
 #include <string>
 #include <iostream>
@@ -62,9 +66,21 @@ void Game::Play()
 			}
 		}
 		GameBoard.MovePiece(SourceX, SourceY, DestX, DestY);
-		GameBoard.IsWhitesGo = !GameBoard.IsWhitesGo;
-		Draw->BlankLine();
-		Draw->Seperator();
+		if (GameBoard.GameOver())
+		{
+			Draw->BlankLine();
+			Draw->Seperator();
+			Draw->BlankLine();
+			std::string str = ((GameBoard.IsWhitesGo()) ? "White" : "Black");
+			Draw->Text("Checkmate! " + str + " won the game!");
+			IsPlaying = false;
+		}
+		else
+		{
+			GameBoard.ChangeTurn();
+			Draw->BlankLine();
+			Draw->Seperator();
+		}
 	}
 }
 
@@ -85,52 +101,6 @@ bool Game::ValidateMove(int SourceX, int SourceY, int DestX, int DestY, std::str
 		Error = "Please choose a valid move.";
 		return false;
 	}
-	// Is there anything in the way?
-	std::shared_ptr<Piece> ChosenPiece = GameBoard.PointerFromCoords(SourceX, SourceY);
-	if (ChosenPiece->GetName() != "Knight")
-	{
-		// There will always be a straight line, diagonal, horizontal or vertical, between where the piece
-		// is and where it wants to be. I need to check every point on that line to see if it is empty. If
-		// any of them aren't, we return false. If they are all empty, we can leave the loop.
-		int XVal = 0;
-		int YVal = 0;
-		if (SourceX == DestX)
-		{
-			XVal = 0;
-		}
-		else if (SourceX > DestX)
-		{
-			XVal = -1;
-		}
-		else if (DestX > SourceX)
-		{
-			XVal = 1;
-		}
-		if (SourceY == DestY)
-		{
-			YVal = 0;
-		}
-		else if (SourceY > DestY)
-		{
-			YVal = -1;
-		}
-		else if (DestY > SourceY)
-		{
-			YVal = 1;
-		}
-		int XLook = SourceX + XVal;
-		int YLook = SourceY + YVal;
-		while (!(XLook == DestX && YLook == DestY))
-		{
-			if (!GameBoard.IsEmpty(XLook, YLook))
-			{
-				Error = "You cannot move through another piece!";
-				return false;
-			}
-			XLook += XVal;
-			YLook += YVal;
-		}
-	}
 	return true;
 }
 
@@ -139,12 +109,12 @@ void Game::DrawBoard(std::vector<std::string> Board)
 	Draw->BlankLine();
 	Draw->Seperator();
 	Draw->BlankLine();
-	for (int x = 0; x < Board.size(); ++x)
+	for (unsigned int x = 0; x < Board.size(); ++x)
 	{
 		Draw->Text(Board[x]);
 	}
 	Draw->BlankLine();
-	if (GameBoard.IsWhitesGo)
+	if (GameBoard.IsWhitesGo())
 	{
 		Draw->Text("It is white's go!");
 	}
