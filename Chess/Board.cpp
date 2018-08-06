@@ -173,7 +173,7 @@ std::vector<std::string> Board::GetBoard()
 	}
 	
 	// Separate the squares out to look nice.
-	for (int x = 0; x < Output.size(); ++x)
+	for (unsigned int x = 0; x < Output.size(); ++x)
 	{
 		Output[x] = std::string(std::to_string(x) + "|" + std::string(1, Output[x][0]) + "|" + 
 			std::string(1, Output[x][1]) + "|" + std::string(1, Output[x][2]) + "|" + 

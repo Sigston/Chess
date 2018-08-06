@@ -86,12 +86,52 @@ bool Game::ValidateMove(int SourceX, int SourceY, int DestX, int DestY, std::str
 		return false;
 	}
 	// Is there anything in the way?
-	/*auto Piece = GameBoard.PointerFromCoords(SourceX, SourceY);
-	if (Piece->GetName != "Knight")
+	std::shared_ptr<Piece> ChosenPiece = GameBoard.PointerFromCoords(SourceX, SourceY);
+	if (ChosenPiece->GetName() != "Knight")
 	{
-
+		// There will always be a straight line, diagonal, horizontal or vertical, between where the piece
+		// is and where it wants to be. I need to check every point on that line to see if it is empty. If
+		// any of them aren't, we return false. If they are all empty, we can leave the loop.
+		int XVal = 0;
+		int YVal = 0;
+		if (SourceX == DestX)
+		{
+			XVal = 0;
+		}
+		else if (SourceX > DestX)
+		{
+			XVal = -1;
+		}
+		else if (DestX > SourceX)
+		{
+			XVal = 1;
+		}
+		if (SourceY == DestY)
+		{
+			YVal = 0;
+		}
+		else if (SourceY > DestY)
+		{
+			YVal = -1;
+		}
+		else if (DestY > SourceY)
+		{
+			YVal = 1;
+		}
+		int XLook = SourceX + XVal;
+		int YLook = SourceY + YVal;
+		while (!(XLook == DestX && YLook == DestY))
+		{
+			if (!GameBoard.IsEmpty(XLook, YLook))
+			{
+				Error = "You cannot move through another piece!";
+				return false;
+			}
+			XLook += XVal;
+			YLook += YVal;
+		}
 	}
-	return true;*/
+	return true;
 }
 
 void Game::DrawBoard(std::vector<std::string> Board)
